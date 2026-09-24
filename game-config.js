@@ -82,6 +82,7 @@ export const GAME_CONFIG = {
                 'assets/sparkyDialogues/menuDialogue/laal-peele-goobare.mp3',
                 'assets/sparkyDialogues/menuDialogue/meow.mp3',
                 'assets/sparkyDialogues/menuDialogue/yo-aapka-bhai-sparky.mp3',
+                'assets/sparkyDialogues/menuDialogue/sparky-bhai-ke-aage.mp3'
             ],
         },
     },
