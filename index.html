@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Balloon Swar Pop</title>
+    <!-- Tailwind CSS for UI styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center min-h-screen select-none">
+
+    <div id="game-wrapper" class="flex flex-col justify-between">
+
+        <!-- Particle Overlay Canvas -->
+        <canvas id="fx-canvas"></canvas>
+
+        <!-- Background Sky & Scenery -->
+        <div id="game-scenery" class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            <!-- Sun Glow -->
+            <div class="absolute -top-12 -left-12 w-40 h-40 bg-yellow-200 opacity-60 rounded-full blur-2xl"></div>
+            
+            <!-- Procedural CSS Clouds -->
+            <div class="absolute top-[8%] left-[5%] opacity-80 animate-pulse">
+                <div class="w-20 h-6 bg-white rounded-full relative">
+                    <div class="w-10 h-10 bg-white rounded-full absolute -top-4 left-3"></div>
+                    <div class="w-8 h-8 bg-white rounded-full absolute -top-2 left-10"></div>
+                </div>
+            </div>
+            <div class="absolute top-[18%] right-[8%] opacity-70">
+                <div class="w-24 h-7 bg-white rounded-full relative">
+                    <div class="w-12 h-12 bg-white rounded-full absolute -top-5 left-4"></div>
+                    <div class="w-8 h-8 bg-white rounded-full absolute -top-2 left-14"></div>
+                </div>
+            </div>
+
+            <!-- Hills at Bottom -->
+            <div class="absolute bottom-0 w-full h-24 bg-emerald-400 rounded-t-[50%] scale-125 transform translate-y-8"></div>
+            <div class="absolute bottom-0 w-full h-16 bg-emerald-500 rounded-t-[40%] scale-110 transform translate-y-4"></div>
+        </div>
+
+        <!-- TOP UI BAR -->
+        <header class="relative z-20 px-4 pt-4 pt-safe flex items-center justify-between">
+            <!-- Progress Stars Bar -->
+            <div id="progress-bar" class="cel-panel flex items-center space-x-1.5 bg-white/80 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-white/50 min-w-[150px] justify-center min-h-[44px]">
+                <span class="star-icon text-2xl opacity-25 text-sky-900 transform transition-all duration-300">☆</span>
+                <span class="star-icon text-2xl opacity-25 text-sky-900 transform transition-all duration-300">☆</span>
+                <span class="star-icon text-2xl opacity-25 text-sky-900 transform transition-all duration-300">☆</span>
+                <span class="star-icon text-2xl opacity-25 text-sky-900 transform transition-all duration-300">☆</span>
+                <span class="star-icon text-2xl opacity-25 text-sky-900 transform transition-all duration-300">☆</span>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex items-center space-x-2">
+                <!-- Speaker Repeat Button -->
+                <button id="btn-speaker" class="cel-icon-button cel-icon-button--yellow w-11 h-11 bg-amber-400 hover:bg-amber-300 active:scale-95 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-amber-200 transition">
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </button>
+                <!-- Settings Button -->
+                <button id="btn-settings" class="cel-icon-button w-11 h-11 bg-white/80 hover:bg-white active:scale-95 text-sky-700 rounded-full flex items-center justify-center shadow-md border border-white/50 transition">
+                    <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- TARGET CHALLENGE CARD -->
+        <div id="challenge-row" class="relative z-20 mt-4 text-center">
+            <div id="sparky-guide" class="sparky sparky--idle" role="img" aria-label="Sparky is ready"></div>
+            <div id="target-card" class="cel-panel bg-white/95 backdrop-blur-md rounded-3xl px-8 py-2 inline-block transform transition-transform">
+                <span class="block text-sm font-bold tracking-widest text-sky-500 uppercase">स्वर पहचानो</span>
+                <span id="target-number" data-text="?" class="is-masked text-6xl font-black text-sky-600 drop-shadow-sm">?</span>
+            </div>
+            <button id="announcement-speaker" type="button" aria-label="Replay swar audio">
+                <img src="assets/loudSpeaker/speaker.png" alt="" draggable="false">
+                <img src="assets/loudSpeaker/speaker2.png" alt="" draggable="false">
+            </button>
+        </div>
+
+        <!-- BALLOON PLAY AREA (occupies ~75% of view) -->
+        <main id="balloon-area" class="relative flex-1 w-full my-2 z-10 overflow-hidden">
+            <!-- Balloons injected dynamically via JS -->
+        </main>
+
+        <!-- START / HOME OVERLAY -->
+        <div id="screen-home" class="absolute inset-0 z-40 flex flex-col items-center justify-between p-5 text-center">
+            <div class="home-top-group flex flex-col items-center">
+                <!-- Canvas for particles behind titleArt -->
+                <canvas id="title-fx-canvas" class="title-fx-canvas" aria-hidden="true"></canvas>
+                <h1 class="game-title">
+                    <img src="assets/titleArt.png" alt="Balloon Swar Pehchan Pop">
+                </h1>
+                <div id="home-sparky-btn" class="home-sparky" role="button" tabindex="0" aria-label="Sparky">
+                    <img id="home-sparky-img" src="assets/SparkyArt.png" alt="Sparky" draggable="false">
+                </div>
+                <div class="home-badge-wrapper">
+                    <span class="badge-spark badge-spark--left" aria-hidden="true"></span>
+                    <button type="button" id="badge-matching" class="home-badge">Matching स्वर ko Pop Karo<span class="badge-exclamation">!</span></button>
+                    <span class="badge-spark badge-spark--right" aria-hidden="true"></span>
+                </div>
+            </div>
+
+            <!-- Big Toy Play Button with Radiant Glow -->
+            <div class="play-button-wrapper">
+                <div class="play-button-halo" aria-hidden="true"></div>
+                <button id="btn-play" class="cel-play-button w-36 h-36 active:scale-90 rounded-full border-4 border-white shadow-2xl flex items-center justify-center transition-transform transform" aria-label="Play">
+                    <svg class="w-16 h-16 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+            </div>
+
+            <!-- Bottom Menu Controls -->
+            <div class="mb-5 flex items-center space-x-4">
+                <button id="btn-levels" class="cel-text-button bg-white/90 hover:bg-white text-sky-800 font-bold px-5 py-2.5 rounded-2xl shadow-md border border-white flex items-center space-x-2 active:scale-95 transition">
+                    <span class="menu-button-icon menu-button-icon--levels" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 21V4"/>
+                            <path d="M5 5c4-3 7 3 12 0v9c-5 3-8-3-12 0"/>
+                            <path d="M3 21h5"/>
+                        </svg>
+                    </span>
+                    <span>Levels</span>
+                </button>
+                <button id="btn-album" class="cel-text-button bg-white/90 hover:bg-white text-sky-800 font-bold px-5 py-2.5 rounded-2xl shadow-md border border-white flex items-center space-x-2 active:scale-95 transition">
+                    <span class="menu-button-icon menu-button-icon--stickers" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 21h8"/>
+                            <path d="M12 17v4"/>
+                            <path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/>
+                            <path d="M7 6H4v2a4 4 0 0 0 4 4"/>
+                            <path d="M17 6h3v2a4 4 0 0 1-4 4"/>
+                        </svg>
+                    </span>
+                    <span>Stickers</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CELEBRATION MODAL -->
+        <div id="modal-celebration" class="hidden absolute inset-0 z-50 bg-black/45 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="celebration-panel relative flex flex-col items-center justify-between text-center select-none">
+                
+                <!-- Top Section: Sparky & Title -->
+                <div class="celebration-top-group flex flex-col items-center">
+                    <div class="sparky-celebration-wrap relative flex items-center justify-center">
+                        <div class="sparky sparky--celebrate sparky--modal" role="img" aria-label="Sparky celebrates"></div>
+                        <svg class="sparkle-star sparkle-star--1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
+                        <svg class="sparkle-star sparkle-star--2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
+                        <svg class="sparkle-star sparkle-star--3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
+                        <svg class="sparkle-star sparkle-star--4" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
+                        <svg class="sparkle-star sparkle-star--5" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
+                    </div>
+                    <h2 class="celebration-title font-black">कमाल कर दिया!</h2>
+                    <p class="celebration-subtitle font-bold">आपने सारे स्वर फोड़ दिए!</p>
+                </div>
+
+                <!-- Middle Section: Sticker Reward -->
+                <div class="celebration-reward-group flex flex-col items-center w-full">
+                    <span class="celebration-unlocked-tag font-black">नया स्टीकर खुला!</span>
+                    <div id="reward-box" class="reward-halo-container relative flex items-center justify-center">
+                        <div class="reward-halo" aria-hidden="true"></div>
+                        <svg class="sparkle-star sparkle-star--r1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
+                        <svg class="sparkle-star sparkle-star--r2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
+                        <svg class="sparkle-star sparkle-star--r3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
+                        <svg class="sparkle-star sparkle-star--r4" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/></svg>
+                        <div id="reward-icon" class="relative z-10 w-24 h-24 flex items-center justify-center">
+                            <img class="sticker-art" src="assets/stickers/emoji_u1f308.svg" alt="Rainbow sticker">
+                        </div>
+                    </div>
+                    <span id="reward-name" class="celebration-sticker-title font-black">Rainbow</span>
+                </div>
+
+                <!-- Bottom Section: Next Level Button -->
+                <div class="celebration-bottom-group w-full flex justify-center">
+                    <button id="btn-next-round" class="celebration-btn-next active:scale-95 transition" type="button">
+                        अगला लेवल ▶
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEVEL SELECT SCREEN -->
+        <div id="screen-levels" class="scenic-overlay hidden absolute inset-0 z-50 flex p-4">
+            <div class="levels-panel">
+                <div class="levels-header">
+                    <button id="btn-close-levels" type="button" aria-label="Back to home">
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                    </button>
+                    <h2>Select Level</h2>
+                    <span class="levels-header-spacer" aria-hidden="true"></span>
+                </div>
+                <div class="levels-divider"></div>
+                <div id="levels-grid" class="no-scrollbar">
+                    <!-- Injected via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- STICKER ALBUM MODAL -->
+        <div id="modal-album" class="scenic-overlay hidden absolute inset-0 z-50 flex flex-col justify-between p-4">
+            <div class="flex items-center justify-between my-2">
+                <h2 class="album-title text-2xl font-black text-sky-900">
+                    <img src="assets/stickers/emoji_u2b50.svg" alt="" aria-hidden="true">
+                    <span>Sticker Album</span>
+                </h2>
+                <button id="btn-close-album" class="w-10 h-10 bg-white/20 text-white rounded-full font-bold text-xl flex items-center justify-center">✕</button>
+            </div>
+            
+            <div id="album-grid" class="flex-1 grid grid-cols-3 gap-3 overflow-y-auto no-scrollbar py-2">
+                <!-- Injected via JavaScript -->
+            </div>
+
+            <div class="text-center py-2 text-xs text-sky-200">Complete rounds to collect all fun stickers!</div>
+        </div>
+
+        <!-- SETTINGS / PARENT MODAL -->
+        <div id="modal-settings" class="hidden absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="settings-panel max-w-xs w-full">
+                <div class="settings-header">
+                    <h2>Settings</h2>
+                    <button id="btn-close-settings" type="button" aria-label="Close settings">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <div class="settings-options">
+                    <label class="settings-option" for="toggle-sound">
+                        <span class="settings-option-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12"/></svg>
+                        </span>
+                        <span class="settings-option-label">Sound Effects</span>
+                        <input type="checkbox" id="toggle-sound" checked>
+                    </label>
+                    <label class="settings-option" for="toggle-music">
+                        <span class="settings-option-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13M9 9l11-2"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+                        </span>
+                        <span class="settings-option-label">Music</span>
+                        <input type="checkbox" id="toggle-music" checked>
+                    </label>
+                </div>
+
+                <div class="settings-divider"></div>
+
+                <button id="btn-home-return" class="w-full">
+                    MAIN MENU
+                </button>
+            </div>
+        </div>
+
+        <!-- LANDSCAPE WARNING NOTICE -->
+        <div id="landscape-notice" class="fixed inset-0 z-50 bg-sky-600 text-white flex flex-col items-center justify-center p-6 text-center">
+            <div class="text-6xl mb-4 animate-bounce">📱 ↻</div>
+            <h2 class="text-2xl font-black mb-2">Please Rotate Your Device</h2>
+            <p class="text-sky-100 text-sm">Balloon Swar Pop is designed for portrait mode.</p>
+        </div>
+
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
