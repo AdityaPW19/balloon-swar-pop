@@ -1420,7 +1420,9 @@ body {
     padding: 8px 7px 34px !important;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 21px 17px;
+    grid-auto-rows: max-content;
+    align-content: start;
+    gap: 18px 17px;
     overflow-x: visible;
     overflow-y: auto;
     scroll-padding-block: 8px 34px;

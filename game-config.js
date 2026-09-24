@@ -9,7 +9,7 @@ export const GAME_CONFIG = {
     // Analytics & XP System Configuration
     analytics: {
         gameId: 'balloon-swar-pop',
-        totalCampaignXp: 200, // Strict invariant: max 200 XP per campaign/run (20 XP per level across 10 levels)
+        totalCampaignXp: 200, // Strict invariant: max 200 XP per campaign/run (50 XP max per level across 4 levels)
         usePerformanceTiers: true, // 100% (0 mistakes), 80% (1 mistake), 60% (2+ mistakes)
     },
 
@@ -108,18 +108,12 @@ export const GAME_CONFIG = {
         { base: '#fb923c', light: '#fdba74', knot: '#ea580c' }, // Orange
     ],
 
-    // Sticker Album rewards unlocked on level completion (1 starter + 10 level rewards)
+    // Sticker Album rewards unlocked on level completion (1 starter + 4 level rewards)
     stickers: [
         { id: 0, asset: 'emoji_u2b50.svg', name: 'सुपर स्टार' },
         { id: 1, asset: 'emoji_u1f308.svg', name: 'इंद्रधनुष' },
         { id: 2, asset: 'emoji_u1f680.svg', name: 'रॉकेट' },
         { id: 3, asset: 'emoji_u1f995.svg', name: 'डाइनो' },
-        { id: 4, asset: 'emoji_u1f41d.svg', name: 'मधुमक्खी' },
-        { id: 5, asset: 'emoji_u1f43c.svg', name: 'पांडा' },
-        { id: 6, asset: 'emoji_u1f984.svg', name: 'यूनिकॉर्न' },
-        { id: 7, asset: 'emoji_u1f419.svg', name: 'ऑक्टोपस' },
-        { id: 8, asset: 'emoji_u2600.svg', name: 'सूरज' },
-        { id: 9, asset: 'emoji_u1f98b.svg', name: 'तितली' },
-        { id: 10, asset: 'emoji_u1f3c6.svg', name: 'स्वर चैंपियन' }
+        { id: 4, asset: 'emoji_u1f3c6.svg', name: 'स्वर चैंपियन' }
     ]
 };
